@@ -40,6 +40,17 @@
 #undef DestroyAll
 #undef Status
 #undef Bool
+#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__) || defined(_WIN64)
+#include <direct.h>
+enum mode_t
+{
+    S_IRWXU
+};
+
+inline int mkdir(const char *path, mode_t mode)
+{
+    return _mkdir(path);
+}
 #endif
 
 /// LLPC major interface version.

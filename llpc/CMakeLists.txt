@@ -25,6 +25,8 @@
 
 project(LLPC C CXX)
 
+include(AmdCmakeHelper)
+
 ### Create LLPC Library ################################################################################################
 add_library(llpc STATIC "")
 
@@ -71,6 +73,11 @@ if(ICD_BUILD_LLPC)
 
     add_subdirectory(${XGL_LLVM_SRC_PATH} ${PROJECT_BINARY_DIR}/llvm)
     set(XGL_LLVM_BUILD_PATH ${PROJECT_BINARY_DIR}/llvm)
+
+    if(AMDLLPC_STANDALONE)
+        add_dependencies(intrinsics_gen llvm-tblgen)
+        add_dependencies(llpc intrinsics_gen)
+    endif()
 
     llvm_map_components_to_libnames(llvm_libs lgc amdgpucodegen amdgpuinfo amdgpuasmparser amdgpudisassembler LTO ipo analysis bitreader bitwriter codegen irreader linker mc passes support target transformutils coroutines)
     target_link_libraries(llpc PUBLIC ${llvm_libs})
@@ -311,6 +318,7 @@ endif()
 llvm_map_components_to_libnames(llvm_libs lgc amdgpucodegen amdgpuinfo amdgpuasmparser amdgpudisassembler LTO ipo analysis bitreader bitwriter codegen irreader linker mc passes support target transformutils coroutines aggressiveinstcombine)
 target_link_libraries(amdllpc PRIVATE ${llvm_libs})
 target_link_libraries(amdllpc PRIVATE cwpack)
+add_dependencies(amdllpc spvgen)
 endif()
 ### Add Subdirectories #################################################################################################
 if(ICD_BUILD_LLPC)

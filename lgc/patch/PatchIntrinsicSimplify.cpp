@@ -42,6 +42,9 @@
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/IntrinsicsAMDGPU.h"
 #include "llvm/InitializePasses.h"
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__) || defined(_WIN64)
+  #define _USE_MATH_DEFINES
+#endif
 #include <math.h>
 
 #define DEBUG_TYPE "lgc-patch-intrinsic-simplify"

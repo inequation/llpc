@@ -361,12 +361,35 @@ DEFI_EXPORT_FUNC(vfxPrintDoc);
 
 // SPIR-V generator Windows implementation
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__) || defined(_WIN64)
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+static const char *SpvGeneratorName = "spvgen.dll";
+enum RTLDDummy
+{
+    RTLD_GLOBAL,
+    RTLD_NOW
+};
+inline void *dlopen(const char *filename, int flags)
+{
+    return LoadLibraryA(filename);
+}
+inline int dlclose(void *handle)
+{
+    return !!FreeLibrary((HMODULE)handle);
+}
+inline void *dlsym(void *handle, const char *symbol)
+{
+    return GetProcAddress((HMODULE)handle, symbol);
+}
+#else
 #include <dlfcn.h>
 #include <stdio.h>
 #if __APPLE__ && __MACH__
 static const char* SpvGeneratorName = "spvgen.dylib";
 #else
 static const char* SpvGeneratorName = "spvgen.so";
+#endif
 #endif
 
 #define INITFUNC(func) \

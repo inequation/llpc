@@ -46,6 +46,9 @@ if(ICD_BUILD_LLPC)
 endif()
 
 # imported/metrohash
+if(NOT TARGET metrohash AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/metrohash")
+    add_subdirectory(../../../third_party/metrohash ${PROJECT_BINARY_DIR}/../metrohash)
+endif()
 if(NOT TARGET metrohash)
     add_subdirectory(../../imported/metrohash ${PROJECT_BINARY_DIR}/../metrohash)
     target_link_libraries(dumper PUBLIC llpc_metrohash)
@@ -58,6 +61,9 @@ if(LLPC_ENABLE_SHADER_CACHE)
     target_compile_definitions(dumper PRIVATE LLPC_ENABLE_SHADER_CACHE=1)
 endif()
 
+if(NOT TARGET cwpack AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/cwpack")
+	add_subdirectory(../../../third_party/cwpack ${PROJECT_BINARY_DIR}/../cwpack)
+endif()
 target_link_libraries(dumper PRIVATE cwpack)
 
 target_include_directories(dumper

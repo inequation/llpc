@@ -33,7 +33,9 @@
 
 #include <sys/stat.h>
 #include <time.h>
+#if defined(__unix__)
 #include <unistd.h>
+#endif
 
 #if __APPLE__ && __MACH__
 #include <mach/mach_time.h>

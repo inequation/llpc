@@ -25,6 +25,45 @@
 
 project(VKGC LANGUAGES C CXX)
 
+option(AMDLLPC_STANDALONE "Make a stand-alone build of amdllpc, without the whole Vulkan driver" OFF)
+if(AMDLLPC_STANDALONE)
+    set(XGL_PAL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../pal")
+    set(XGL_ICD_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../xgl/icd")
+    set(XGL_METROHASH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/metrohash")
+    set(XGL_SPVGEN_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../spvgen")
+    set(XGL_VKGC_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+    set(CMAKE_MODULE_PATH "${XGL_PAL_PATH}/cmake/Modules")
+    set(ICD_BUILD_LLPC ON)
+
+    # This will become the value of LLPC_CLIENT_INTERFACE_MAJOR_VERSION.  It describes the version of the LLPC interface
+    # that the ICD supports.  LLPC uses this value to enable backwards-compatibility for older interface versions.  It must
+    # be updated on each LLPC promotion after handling all of the interface changes described in llpc.h
+    file(STRINGS "${XGL_ICD_PATH}/make/importdefs" LLPC_MAJOR_VERSION REGEX "^ICD_LLPC_CLIENT_MAJOR_VERSION = [0-9]+")
+
+    if(LLPC_MAJOR_VERSION STREQUAL "")
+        message(STATUS "Failed to find ICD_LLPC_CLIENT_MAJOR_VERSION")
+    else()
+        string(REGEX REPLACE "ICD_LLPC_CLIENT_MAJOR_VERSION = " "" LLPC_MAJOR_VERSION ${LLPC_MAJOR_VERSION})
+        message(STATUS "Detected ICD_LLPC_CLIENT_MAJOR_VERSION is " ${LLPC_MAJOR_VERSION})
+    endif()
+
+    set(LLPC_CLIENT_INTERFACE_MAJOR_VERSION ${LLPC_MAJOR_VERSION})
+
+    # This will become the value of PAL_CLIENT_INTERFACE_MAJOR_VERSION.  It describes the version of the PAL interface
+    # that the ICD supports.  PAL uses this value to enable backwards-compatibility for older interface versions.  It must
+    # be updated on each PAL promotion after handling all of the interface changes described in palLib.h.
+    file(STRINGS "${XGL_ICD_PATH}/make/importdefs" PAL_MAJOR_VERSION REGEX "^ICD_PAL_CLIENT_MAJOR_VERSION = [0-9]+")
+
+    if(PAL_MAJOR_VERSION STREQUAL "")
+        message(STATUS "Failed to find ICD_PAL_CLIENT_MAJOR_VERSION")
+    else()
+        string(REGEX REPLACE "ICD_PAL_CLIENT_MAJOR_VERSION = " "" PAL_MAJOR_VERSION ${PAL_MAJOR_VERSION})
+        message(STATUS "Detected ICD_PAL_CLIENT_MAJOR_VERSION is " ${PAL_MAJOR_VERSION})
+    endif()
+
+    set(PAL_CLIENT_INTERFACE_MAJOR_VERSION ${PAL_MAJOR_VERSION})
+endif()
+
 add_library(vkgc INTERFACE)
 
 ### Expose header files ################################################################################################
