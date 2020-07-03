@@ -63,7 +63,7 @@ function(set_compiler_options PROJECT_NAME ENABLE_WERROR)
                 -Wno-nested-anon-types
             )
         endif()
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         # CMAKE-TODO: These are /W4 (level 4) warnings
         target_compile_options("${PROJECT_NAME}"
             PRIVATE # Warnings in interface and src
